@@ -112,3 +112,25 @@ export async function authenticate() {
     redirectToLoginPage();
     return false;
 }
+
+/**
+ * @param {string} endpoint
+ * @param {object} options this object should at least contain the method.
+ * @returns {Promise<Response>} the response or null
+ * We want a {Promise<Response>} so we can read the headers as well as the
+ * body, rather than just the body
+ */
+export async function authedAPIRequest(endpoint, options) {
+    if (!(await authenticate())) {
+        return null;
+    }
+
+    let response = await fetch("/api" + endpoint, options);
+
+    if (response.status == 401) {
+        localStorage.removeItem("token");
+        response = await authedAPIRequest(endpoint, options);
+    }
+
+    return response;
+}
