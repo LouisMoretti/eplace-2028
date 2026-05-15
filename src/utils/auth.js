@@ -26,7 +26,7 @@ export async function getToken(code) {
 
     const response = await fetch(proxy_url + "/auth-api/token", {
         body: formData,
-        method: "post",
+        method: "POST",
     });
 
     if (!response.ok) {
