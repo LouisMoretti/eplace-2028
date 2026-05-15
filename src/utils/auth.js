@@ -5,6 +5,8 @@
 // - authenticate (checks if the user is authenticated)
 // - authedAPIRequest (makes an authenticated request to the API)
 
+import { redirectToLoginPage } from "./redirect";
+
 /**
  * @param {string} code the authorization code received from the OIDC
  * provider
@@ -15,12 +17,34 @@ export async function getToken(code) {
 
     formData.append("grant_type", "authorization_code");
     formData.append("code", code);
-    formData.append("redirect_uri", window.location.href);
+    formData.append("redirect_uri", location.origin + location.pathname);
     formData.append("client_id", import.meta.env.VITE_CLIENT_ID);
 
-    const auth_url = import.meta.env.VITE_AUTH_URL;
+    const proxy_url = import.meta.env.VITE_URL;
 
-    return fetch(auth_url + "/token", { body: formData, method: "post" });
+    console.log(code);
+
+    const response = await fetch(proxy_url + "/auth-api/token", {
+        body: formData,
+        method: "post",
+    });
+
+    if (!response.ok) {
+        localStorage.clear();
+        redirectToLoginPage();
+        return false;
+    }
+
+    const json = await response.json();
+    // console.log(json);
+
+    // console.log(json["id_token"]);
+    localStorage.setItem("token", json["id_token"]);
+
+    // console.log(json["refresh_token"]);
+    localStorage.setItem("refresh_token", json["refresh_token"]);
+
+    return true;
 }
 
 /**
