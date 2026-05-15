@@ -109,5 +109,6 @@ export async function authenticate() {
         return refreshToken(refresh_token);
     }
 
+    redirectToLoginPage();
     return false;
 }

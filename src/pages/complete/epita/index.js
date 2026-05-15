@@ -4,15 +4,17 @@
 const params = new URLSearchParams(window.location.search);
 
 import { getToken } from "../../../utils/auth";
+import { redirectToLoginPage } from "../../../utils/redirect";
 
 // for (const [key, value] of params) {
 //     console.log(key, ": ", value);
 // }
 
-console.log("Getting token ...");
+console.log("Getting token...");
 
-await getToken(params.get("code"));
-
-console.log("Finished");
-
-window.location.href = import.meta.env.VITE_URL;
+if (!params.get("code") || !(await getToken(params.get("code")))) {
+    redirectToLoginPage();
+} else {
+    // Redirect to home page
+    window.location.href = import.meta.env.VITE_URL;
+}
