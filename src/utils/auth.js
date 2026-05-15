@@ -22,7 +22,7 @@ export async function getToken(code) {
 
     const proxy_url = import.meta.env.VITE_URL;
 
-    console.log(code);
+    // console.log(code);
 
     const response = await fetch(proxy_url + "/auth-api/token", {
         body: formData,
@@ -51,4 +51,63 @@ export async function getToken(code) {
  * @param {string} refreshToken the refresh token (optional)
  * @returns {Promise<boolean>} whether the token has been refreshed or not
  */
-// export async function refreshToken(refreshToken) {}
+export async function refreshToken(refreshToken) {
+    if (!refreshToken) {
+        refreshToken = localStorage.getItem("refresh_token");
+        if (!refreshToken) {
+            console.log("No token found!");
+        }
+    }
+
+    const formData = new FormData();
+
+    formData.append("grant_type", "refresh_token");
+    formData.append("refresh_token", refreshToken);
+    formData.append("redirect_uri", location.origin + location.pathname);
+    formData.append("client_id", import.meta.env.VITE_CLIENT_ID);
+
+    const proxy_url = import.meta.env.VITE_URL;
+
+    // console.log(refreshToken);
+
+    const response = await fetch(proxy_url + "/auth-api/token", {
+        body: formData,
+        method: "POST",
+    });
+
+    if (!response.ok) {
+        localStorage.clear();
+        redirectToLoginPage();
+        return false;
+    }
+
+    const json = await response.json();
+
+    // console.log(json);
+
+    // console.log(json["id_token"]);
+    localStorage.setItem("token", json["id_token"]);
+
+    // console.log(json["refresh_token"]);
+    localStorage.setItem("refresh_token", json["refresh_token"]);
+
+    return true;
+}
+
+/**
+ * @returns {Promise<boolean>} true if the user is authenticated, false otherwise
+ */
+export async function authenticate() {
+    const token = localStorage.getItem("token");
+    const refresh_token = localStorage.getItem("refresh_token");
+
+    if (token) {
+        return true;
+    }
+
+    if (refresh_token) {
+        return refreshToken(refresh_token);
+    }
+
+    return false;
+}

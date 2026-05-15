@@ -9,4 +9,10 @@ import { getToken } from "../../../utils/auth";
 //     console.log(key, ": ", value);
 // }
 
-getToken(params.get("code"));
+console.log("Getting token ...");
+
+await getToken(params.get("code"));
+
+console.log("Finished");
+
+window.location.href = import.meta.env.VITE_URL;
