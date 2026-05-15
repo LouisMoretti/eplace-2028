@@ -125,11 +125,18 @@ export async function authedAPIRequest(endpoint, options) {
         return null;
     }
 
-    let response = await fetch("/api" + endpoint, options);
+    const api_url = import.meta.env.VITE_URL;
+
+    let response = await fetch(api_url + "/api" + endpoint, options);
 
     if (response.status == 401) {
         localStorage.removeItem("token");
-        response = await authedAPIRequest(endpoint, options);
+
+        if (!refreshToken()) {
+            return null;
+        }
+
+        response = await fetch("/api" + endpoint, options);
     }
 
     return response;
