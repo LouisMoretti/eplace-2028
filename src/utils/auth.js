@@ -109,7 +109,9 @@ export async function authenticate() {
         return refreshToken(refresh_token);
     }
 
+    localStorage.clear();
     redirectToLoginPage();
+
     return false;
 }
 
@@ -127,16 +129,44 @@ export async function authedAPIRequest(endpoint, options) {
 
     const api_url = import.meta.env.VITE_URL;
 
-    let response = await fetch(api_url + "/api" + endpoint, options);
+    let token = localStorage.getItem("token");
+
+    let headers = {
+        Authorization: `Bearer ${token}`,
+        ...options.headers,
+    };
+
+    let response = await fetch(
+        api_url + "/api" + endpoint,
+        ...options,
+        headers,
+    );
 
     if (response.status == 401) {
-        localStorage.removeItem("token");
+        const message = await response.text();
 
-        if (!refreshToken()) {
+        if (message.includes("Token expired")) {
+            if (!refreshToken()) {
+                return null;
+            }
+
+            token = localStorage.getItem("token");
+
+            headers = {
+                Authorization: `Bearer ${token}`,
+                ...options.headers,
+            };
+
+            response = await fetch(
+                api_url + "/api" + endpoint,
+                ...options,
+                headers,
+            );
+        } else {
+            localStorage.clear();
+            redirectToLoginPage();
             return null;
         }
-
-        response = await fetch("/api" + endpoint, options);
     }
 
     return response;
