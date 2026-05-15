@@ -131,16 +131,11 @@ export async function authedAPIRequest(endpoint, options) {
 
     let token = localStorage.getItem("token");
 
-    let headers = {
+    options.headers = {
         Authorization: `Bearer ${token}`,
-        ...options.headers,
     };
 
-    let response = await fetch(
-        api_url + "/api" + endpoint,
-        ...options,
-        headers,
-    );
+    let response = await fetch(api_url + "/api" + endpoint, options);
 
     if (response.status == 401) {
         const message = await response.text();
@@ -152,16 +147,11 @@ export async function authedAPIRequest(endpoint, options) {
 
             token = localStorage.getItem("token");
 
-            headers = {
+            options.headers = {
                 Authorization: `Bearer ${token}`,
-                ...options.headers,
             };
 
-            response = await fetch(
-                api_url + "/api" + endpoint,
-                ...options,
-                headers,
-            );
+            response = await fetch(api_url + "/api" + endpoint, options);
         } else {
             localStorage.clear();
             redirectToLoginPage();
