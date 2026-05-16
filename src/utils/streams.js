@@ -10,6 +10,7 @@
 
 import { io } from "socket.io-client";
 import { authenticate } from "./auth";
+import { fetchRoomConfig } from "../rooms";
 
 export let socket = null;
 
@@ -39,17 +40,22 @@ export async function initSocket() {
         }
     });
 
-    socket.on("message", (data) => {
+    socket.on("message", async (data) => {
         // console.log(data);
 
         if (data?.error) {
             if (data.error.json.message.includes("Token expired")) {
                 console.log("Expired token");
+                // TODO: Error recovery.
             } else {
                 console.log("Message error");
             }
         } else if (data.result.type == "started") {
             console.log("Subcribed");
+            // TODO: Fetch config.
+            await fetchRoomConfig();
+
+            // TODO: Fetch canva.
         }
     });
 
