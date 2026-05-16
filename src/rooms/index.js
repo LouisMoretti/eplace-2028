@@ -9,6 +9,8 @@
 // - updateRoom (update a room's configuration)
 // - deleteRoom (delete a room)
 
+import { authedAPIRequest } from "../utils/auth";
+
 let roomConfig = null;
 
 export async function fetchRoomConfig() {
@@ -18,21 +20,16 @@ export async function fetchRoomConfig() {
         slug = "epi-place";
     }
 
-    const token = localStorage.getItem("token");
-    const api_url = import.meta.env.VITE_URL;
-
-    const options = {
+    const response = await authedAPIRequest(`/rooms/${slug}/config`, {
         headers: {
-            Authorization: `Bearer ${token}`,
             Accept: "application/json",
         },
         method: "GET",
-    };
+    });
 
-    const response = await fetch(
-        `${api_url}/api/rooms/${slug}/config`,
-        options,
-    );
+    if (!response) {
+        return null;
+    }
 
     // console.log(response);
 

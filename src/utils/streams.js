@@ -57,6 +57,11 @@ export async function initSocket() {
             // Fetch and set config.
             const config = await fetchRoomConfig();
 
+            if (!config) {
+                console.log("FetchRoomConfig failed");
+                return;
+            }
+
             console.log(config);
             setCurrentRoomConfig(config);
 
