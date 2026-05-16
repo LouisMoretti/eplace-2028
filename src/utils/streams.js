@@ -54,32 +54,32 @@ export async function initSocket() {
             }
         } else if (data.result.type == "started") {
             console.log("Subcribed");
-            // Fetch and set config.
-            const config = await fetchRoomConfig();
+            // // Fetch and set config.
+            // const config = await fetchRoomConfig();
 
-            if (!config) {
-                console.log("FetchRoomConfig failed");
-                return;
-            }
+            // if (!config) {
+            //     console.log("FetchRoomConfig failed");
+            //     return;
+            // }
 
-            console.log(config);
-            setCurrentRoomConfig(config);
+            // console.log(config);
+            // setCurrentRoomConfig(config);
 
-            // Fetch and init canva.
-            const pixels = await getCanvas();
+            // // Fetch and init canva.
+            // const pixels = await getCanvas();
 
-            if (!pixels) {
-                console.log("GetCanvas failed");
-                return;
-            }
+            // if (!pixels) {
+            //     console.log("GetCanvas failed");
+            //     return;
+            // }
 
-            // console.log(pixels);
-            initCanvas(config, pixels);
+            // // console.log(pixels);
+            // initCanvas(config, pixels);
         }
     });
 
     socket.on("pixel-update", (data) => {
-        console.log(data);
+        // console.log(data);
         renderCanvasUpdate(
             data.result.data.json.color,
             data.result.data.json.posX,
@@ -87,7 +87,7 @@ export async function initSocket() {
         );
     });
 
-    socket.on("connect", () => {
+    socket.on("connect", async () => {
         console.log("Socket connected");
 
         let slug = location.pathname.split("/")[1];
@@ -98,7 +98,29 @@ export async function initSocket() {
 
         // console.log("Slug: ", slug);
 
-        subscribe(slug);
+        await subscribe(slug);
+
+        // Fetch and set config.
+        const config = await fetchRoomConfig();
+
+        if (!config) {
+            console.log("FetchRoomConfig failed");
+            return;
+        }
+
+        console.log(config);
+        setCurrentRoomConfig(config);
+
+        // Fetch and init canva.
+        const pixels = await getCanvas();
+
+        if (!pixels) {
+            console.log("GetCanvas failed");
+            return;
+        }
+
+        // console.log(pixels);
+        initCanvas(config, pixels);
     });
 }
 

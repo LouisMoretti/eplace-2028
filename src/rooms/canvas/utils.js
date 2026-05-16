@@ -141,7 +141,9 @@ $("#color-place-button")[0].addEventListener("click", async () => {
         body: JSON.stringify(body),
     });
 
-    console.log(response);
+    if (response?.status != 200) {
+        console.log(response);
+    }
 });
 
 /**
