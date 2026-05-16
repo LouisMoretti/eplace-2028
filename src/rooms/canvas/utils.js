@@ -6,6 +6,7 @@
 // - toggleTooltip (toggle the tooltip and display the pixel's information)
 
 import $ from "jquery";
+import { authedAPIRequest } from "../../utils/auth";
 
 const canvasContainer = $("#canvas-container")?.[0];
 const canvas = $("#canvas")?.[0];
@@ -60,6 +61,60 @@ export const toggleTooltip = async (state = false) => {
     if (state) {
         // FIXME: You should implement or call a function to get the pixel's information
         // and display it. Make use of target.x and target.y to get the pixel's position.
+
+        let slug = location.pathname.split("/")[1];
+
+        if (!slug) {
+            slug = "epi-place";
+        }
+
+        const response = await authedAPIRequest(
+            `/rooms/${slug}/canvas/pixels?posX=${target.x}&posY=${target.y}`,
+            {
+                method: "GET",
+            },
+        );
+
+        if (!response) {
+            console.log("Error while requesting pixel info");
+            return;
+        }
+
+        const pixel = await response.json();
+
+        const timestamp = new Date(pixel.timestamp);
+
+        $("#tooltip-date")[0].innerHTML = timestamp.toLocaleDateString();
+        $("#tooltip-time")[0].innerHTML = timestamp.toLocaleTimeString();
+
+        const placedByUid = pixel.placedByUid;
+
+        const request_result = await authedAPIRequest(
+            `/students/${placedByUid}`,
+            {
+                method: "GET",
+            },
+        );
+
+        const student_resources = await request_result?.json();
+
+        $("#tooltip-info-avatar").attr(
+            "src",
+            student_resources.avatarURL ?? "/default-avatar.png",
+        );
+
+        $("#tooltip-info-login")[0].innerHTML = student_resources.login ?? "";
+        $("#tooltip-info-guild")[0].innerHTML = student_resources.guild ?? "";
+        $("#tooltip-info-quote")[0].innerHTML = student_resources.quote ?? "";
+
+        console.log(student_resources);
+
+        console.log(
+            "date: ",
+            timestamp.toDateString(),
+            "time: ",
+            timestamp.toTimeString(),
+        );
     }
 };
 
