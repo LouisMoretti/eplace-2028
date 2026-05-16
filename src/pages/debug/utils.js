@@ -11,7 +11,9 @@ export async function displayStudentProfile() {
     const _uid = decoded.uid;
 
     // You have to write a request to fetch your informations
-    const request_result = authedAPIRequest("student");
+    const request_result = authedAPIRequest(`/students/${_uid}`, {
+        method: "GET",
+    });
 
     if (request_result === null) {
         createAlert(
