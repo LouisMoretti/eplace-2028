@@ -132,6 +132,7 @@ export async function authedAPIRequest(endpoint, options) {
     let token = localStorage.getItem("token");
 
     options.headers = {
+        ...options.headers,
         Authorization: `Bearer ${token}`,
     };
 
@@ -141,7 +142,7 @@ export async function authedAPIRequest(endpoint, options) {
         const message = await response.text();
 
         if (message.includes("Token expired")) {
-            if (!refreshToken()) {
+            if (!(await refreshToken())) {
                 return null;
             }
 

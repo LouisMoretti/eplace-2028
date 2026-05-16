@@ -2,6 +2,7 @@
 import $ from "jquery";
 import jwt_decode from "jwt-decode";
 import { createAlert } from "../../utils/notify";
+import { authedAPIRequest } from "../../utils/auth";
 
 export async function displayStudentProfile() {
     const token = localStorage.getItem("token");
@@ -10,7 +11,7 @@ export async function displayStudentProfile() {
     const _uid = decoded.uid;
 
     // You have to write a request to fetch your informations
-    const request_result = null;
+    const request_result = authedAPIRequest("student");
 
     if (request_result === null) {
         createAlert(
