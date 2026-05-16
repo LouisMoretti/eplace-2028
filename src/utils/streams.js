@@ -63,6 +63,11 @@ export async function initSocket() {
             // Fetch and init canva.
             const pixels = await getCanvas();
 
+            if (!pixels) {
+                console.log("GetCanvas failed");
+                return;
+            }
+
             // console.log(pixels);
             initCanvas(config, pixels);
         }

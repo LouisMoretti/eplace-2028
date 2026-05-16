@@ -7,6 +7,7 @@
 // - placePixel (place a pixel in a room)
 
 import { getCurrentRoomConfig } from "..";
+import { authedAPIRequest } from "../../utils/auth";
 
 export async function getCanvas() {
     let slug = location.pathname.split("/")[1];
@@ -15,21 +16,18 @@ export async function getCanvas() {
         slug = "epi-place";
     }
 
-    const token = localStorage.getItem("token");
-    const api_url = import.meta.env.VITE_URL;
-
     const options = {
         headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
+            "Content-type": "application/json",
         },
         method: "GET",
     };
 
-    const response = await fetch(
-        `${api_url}/api/rooms/${slug}/canvas`,
-        options,
-    );
+    const response = await authedAPIRequest(`/rooms/${slug}/canvas`, options);
+
+    if (!response) {
+        return null;
+    }
 
     // console.log(response);
 
