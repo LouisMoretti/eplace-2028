@@ -22,9 +22,10 @@ export async function getStudent() {
     return await response.json();
 }
 
-export async function updateStudent(avatarURL, quote) {
+export async function updateStudent(avatarURL, guild, quote) {
     const body = {
         avatarURL: avatarURL,
+        guild: guild,
         quote: quote,
     };
 
@@ -44,6 +45,8 @@ export async function updateStudent(avatarURL, quote) {
     if (!response) {
         console.log("Error when updating user");
     }
+
+    console.log(response);
 
     await displayStudentProfile();
 }
