@@ -1,4 +1,4 @@
-// FIXME: This file should handle the authentication
+// FIXED: This file should handle the authentication
 // Functions may include:
 // - getToken (exchanges the code for a token)
 // - refreshToken (refreshes the token using the refresh_token)

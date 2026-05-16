@@ -1,4 +1,4 @@
-// FIXME: This file should handle the redirection to the AUTH URL
+// FIXED: This file should handle the redirection to the AUTH URL
 // Functions may include:
 // - createLink (construct and return the URL to redirect the user to the login page)
 // - redirectToLoginPage (redirect the user to the Forge ID login page)
