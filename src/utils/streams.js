@@ -10,7 +10,9 @@
 
 import { io } from "socket.io-client";
 import { authenticate } from "./auth";
-import { fetchRoomConfig } from "../rooms";
+import { fetchRoomConfig, setCurrentRoomConfig } from "../rooms";
+import { getCanvas } from "../rooms/canvas";
+import { initCanvas } from "../rooms/canvas/utils";
 
 export let socket = null;
 
@@ -33,12 +35,12 @@ export async function initSocket() {
 
     // console.log(socket);
 
-    socket.on("connect_error", (err) => {
-        if (err.message.includes("Token expired")) {
-            socket = null;
-            initSocket();
-        }
-    });
+    // socket.on("connect_error", (err) => {
+    //     if (err.message.includes("Token expired")) {
+    //         socket = null;
+    //         initSocket();
+    //     }
+    // });
 
     socket.on("message", async (data) => {
         // console.log(data);
@@ -52,10 +54,17 @@ export async function initSocket() {
             }
         } else if (data.result.type == "started") {
             console.log("Subcribed");
-            // TODO: Fetch config.
-            await fetchRoomConfig();
+            // Fetch and set config.
+            const config = await fetchRoomConfig();
+
+            console.log(config);
+            setCurrentRoomConfig(config);
 
             // TODO: Fetch canva.
+            const pixels = await getCanvas();
+
+            console.log(pixels);
+            initCanvas(config, pixels);
         }
     });
 

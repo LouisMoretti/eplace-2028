@@ -9,6 +9,8 @@
 // - updateRoom (update a room's configuration)
 // - deleteRoom (delete a room)
 
+let roomConfig = null;
+
 export async function fetchRoomConfig() {
     let slug = location.pathname.split("/")[1];
 
@@ -32,14 +34,16 @@ export async function fetchRoomConfig() {
         options,
     );
 
-    console.log(response);
+    // console.log(response);
 
-    const message = await response.json();
+    return await response.json();
+}
 
-    console.log(message);
+export function setCurrentRoomConfig(config) {
+    roomConfig = config;
 
-    const name = message.metadata.name;
-    const description = message.metadata?.description;
+    const name = config.metadata.name;
+    const description = config.metadata?.description;
 
     console.log(
         `Name: ${name}${description ? `, Description: ${description}` : ""}`,
@@ -56,6 +60,10 @@ export async function fetchRoomConfig() {
 
     if (description) {
         descriptionElement.innerHTML = description;
-        descriptionElement.style.display = "";
+        // descriptionElement.style.display = "";
     }
+}
+
+export function getCurrentRoomConfig() {
+    return roomConfig;
 }
