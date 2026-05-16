@@ -18,6 +18,8 @@ export async function initSocket() {
         return;
     }
 
+    console.log("Starting socket...");
+
     const api_url = import.meta.env.VITE_URL;
 
     const token = localStorage.getItem("token");
@@ -28,18 +30,68 @@ export async function initSocket() {
         },
     });
 
-    console.log(socket);
+    // console.log(socket);
 
     socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err}`);
-        console.log(`connect_error due to ${err.message}`);
         if (err.message.includes("Token expired")) {
-            // if (!refreshToken()) {
-            //     return;
-            // }
-
             socket = null;
             initSocket();
         }
     });
+
+    socket.on("message", (data) => {
+        // console.log(data);
+
+        if (data?.error) {
+            if (data.error.json.message.includes("Token expired")) {
+                console.log("Expired token");
+            } else {
+                console.log("Message error");
+            }
+        } else if (data.result.type == "started") {
+            console.log("Subcribed");
+        }
+    });
+
+    socket.on("connect", () => {
+        console.log("Socket connected");
+
+        let slug = location.pathname.split("/")[1];
+
+        if (!slug) {
+            slug = "epi-place";
+        }
+
+        // console.log("Slug: ", slug);
+
+        subscribe(slug);
+    });
 }
+
+async function subscribe(slug) {
+    if (socket && (await authenticate())) {
+        console.log("Subscribing to: ", slug);
+        socket.send({
+            id: "six-sevennnn-louis.moretti",
+            method: "subscription",
+            params: {
+                path: "rooms.canvas.getStream",
+                input: {
+                    json: {
+                        roomSlug: slug,
+                    },
+                },
+            },
+        });
+    }
+}
+
+// async function unsubscribe(slug) {
+//     if (socket && (await authenticate())) {
+//         console.log("uNSubscribing to: ", slug);
+//         socket.send({
+//             id: "six-sevennnn-louis.moretti",
+//             method: "subscription.stop",
+//         });
+//     }
+// }
