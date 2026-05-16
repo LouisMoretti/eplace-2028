@@ -13,6 +13,7 @@ import { authenticate } from "./auth";
 import { fetchRoomConfig, setCurrentRoomConfig } from "../rooms";
 import { getCanvas } from "../rooms/canvas";
 import { initCanvas, renderCanvasUpdate } from "../rooms/canvas/utils";
+import { displayStudentProfile } from "../students/utils";
 
 export let socket = null;
 
@@ -121,6 +122,8 @@ export async function initSocket() {
 
         // console.log(pixels);
         initCanvas(config, pixels);
+
+        await displayStudentProfile();
     });
 }
 
