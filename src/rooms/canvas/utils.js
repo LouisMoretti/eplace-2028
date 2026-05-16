@@ -107,16 +107,42 @@ export const toggleTooltip = async (state = false) => {
         $("#tooltip-info-guild")[0].innerHTML = student_resources.guild ?? "";
         $("#tooltip-info-quote")[0].innerHTML = student_resources.quote ?? "";
 
-        console.log(student_resources);
+        // console.log(student_resources);
 
-        console.log(
-            "date: ",
-            timestamp.toDateString(),
-            "time: ",
-            timestamp.toTimeString(),
-        );
+        // console.log(
+        //     "date: ",
+        //     timestamp.toDateString(),
+        //     "time: ",
+        //     timestamp.toTimeString(),
+        // );
     }
 };
+
+$("#color-place-button")[0].addEventListener("click", async () => {
+    let slug = location.pathname.split("/")[1];
+
+    if (!slug) {
+        slug = "epi-place";
+    }
+
+    const data = getPlacementData();
+
+    const body = {
+        posX: data.posX,
+        posY: data.posY,
+        color: data.color,
+    };
+
+    const response = await authedAPIRequest(`/rooms/${slug}/canvas/pixels`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+
+    console.log(response);
+});
 
 /**
  * Calculate the target position according to the top left corner of the canvas.
