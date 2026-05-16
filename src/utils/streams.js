@@ -12,7 +12,7 @@ import { io } from "socket.io-client";
 import { authenticate } from "./auth";
 import { fetchRoomConfig, setCurrentRoomConfig } from "../rooms";
 import { getCanvas } from "../rooms/canvas";
-import { initCanvas } from "../rooms/canvas/utils";
+import { initCanvas, renderCanvasUpdate } from "../rooms/canvas/utils";
 
 export let socket = null;
 
@@ -60,12 +60,21 @@ export async function initSocket() {
             console.log(config);
             setCurrentRoomConfig(config);
 
-            // TODO: Fetch canva.
+            // Fetch and init canva.
             const pixels = await getCanvas();
 
-            console.log(pixels);
+            // console.log(pixels);
             initCanvas(config, pixels);
         }
+    });
+
+    socket.on("pixel-update", (data) => {
+        console.log(data);
+        renderCanvasUpdate(
+            data.result.data.json.color,
+            data.result.data.json.posX,
+            data.result.data.json.posY,
+        );
     });
 
     socket.on("connect", () => {
